@@ -17,23 +17,25 @@ function main() {
 
   if (!result) {
     logger.error(`Failed to compile map.`);
+    process.exitCode = 1;
     return;
   }
 
   logger.info(`Creating w3x archive...`);
-  if (!fs.existsSync(config.outputFolder)) {
-    fs.mkdirSync(config.outputFolder);
-  }
+  fs.ensureDirSync(config.outputFolder);
 
-  createMapFromDir(`${config.outputFolder}/${config.mapFolder}`, `./dist/${config.mapFolder}`);
+  if (!createMapFromDir(path.join(config.outputFolder, config.mapFolder), path.join("dist", config.mapFolder))) {
+    process.exitCode = 1;
+  }
 }
 
 /**
  * Creates a w3x archive from a directory
  * @param output The output filename
  * @param dir The directory to create the archive from
+ * @returns Whether every file was imported and the archive was saved.
  */
-export function createMapFromDir(output: string, dir: string) {
+export function createMapFromDir(output: string, dir: string): boolean {
   const map = new War3Map();
   const files = getFilesInDirectory(dir);
 
@@ -45,8 +47,8 @@ export function createMapFromDir(output: string, dir: string) {
     const imported = map.import(archivePath, contents);
 
     if (!imported) {
-      logger.warn("Failed to import " + archivePath);
-      continue;
+      logger.error("Failed to import " + archivePath);
+      return false;
     }
   }
 
@@ -54,12 +56,13 @@ export function createMapFromDir(output: string, dir: string) {
 
   if (!result) {
     logger.error("Failed to save archive.");
-    return;
+    return false;
   }
 
   fs.writeFileSync(output, new Uint8Array(result));
 
   logger.info("Finished!");
+  return true;
 }
 
 main();

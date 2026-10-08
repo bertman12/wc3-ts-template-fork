@@ -3,6 +3,19 @@
 
 Setup Guide: [Getting Started](https://cipherxof.github.io/w3ts/docs/getting-started).
 
+## Commands
+
+| Command | Behavior |
+| --- | --- |
+| `npm run dev` | Builds the map archive, then launches it in Warcraft III. |
+| `npm run test` | Same build-and-launch workflow as `dev`. |
+| `npm run build` | Compiles and packages the map without launching the game. |
+| `npm run watch:defs` | Watches World Editor map scripts and regenerates `src/war3map.d.ts` (the previous `dev` behavior). |
+
+The launcher opens the archive at `config.outputFolder` + `config.mapFolder`
+(`dist\bin\map.w3x` with the current configuration), not the unpacked
+`dist\map.w3x` directory. A failed build prevents launch.
+
 ## Features
 * TypeScript API and wrappers for most handles ([w3ts](https://github.com/cipherxof/w3ts))
 * Support for object data manipulation (read/write) ([war3-objectdata](https://github.com/cipherxof/war3-objectdata))
